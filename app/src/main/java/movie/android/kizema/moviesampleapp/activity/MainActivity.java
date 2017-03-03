@@ -62,11 +62,6 @@ public class MainActivity extends BaseActivity implements MovieAdapter.OnAdapter
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(LatestMovieEvent event) {
         mainActivityListHelper.handleLatestMovieEvent(event);
-
-        LatestMovieEvent stickyEvent = EventBus.getDefault().getStickyEvent(LatestMovieEvent.class);
-        if(stickyEvent != null) {
-            EventBus.getDefault().removeStickyEvent(stickyEvent);
-        }
     }
 
     @Override

@@ -61,7 +61,7 @@ public class MainActivityListHelper {
             hasMore = savedInstanceState.getBoolean(KEY_HAS_MORE);
             nextPageId = savedInstanceState.getInt(KEY_NEXT_PAGE_ID);
             totalPages = savedInstanceState.getInt(KEY_TOTAL_PAGES);
-            movieAdapter.update(listMovies);
+            movieAdapter.setList(listMovies);
         }
     }
 

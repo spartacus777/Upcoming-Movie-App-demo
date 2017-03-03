@@ -25,7 +25,7 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int FOOTER = 2;
 
     private List<Movie> movies;
-    private boolean showFooter = true;
+    private boolean showFooter = false;
     private OnAdapterClickListener listener;
 
     public interface OnAdapterClickListener{
@@ -34,6 +34,11 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public MovieAdapter(OnAdapterClickListener listener) {
         this.listener = listener;
+    }
+
+    public void setList(List<Movie> newMovies) {
+        this.movies = newMovies;
+        notifyDataSetChanged();
     }
 
     public void update(List<Movie> newMovies){
