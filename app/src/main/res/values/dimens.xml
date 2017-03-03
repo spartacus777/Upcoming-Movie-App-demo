@@ -6,5 +6,7 @@
     <dimen name="text_size_smaller_medium">12sp</dimen>
     <dimen name="text_medium">18sp</dimen>
     <integer name="transition_time">90</integer>
+    <dimen name="ranking_btn_rounding">15dp</dimen>
+    <dimen name="ranking_btn_width">2dp</dimen>
 
 </resources>

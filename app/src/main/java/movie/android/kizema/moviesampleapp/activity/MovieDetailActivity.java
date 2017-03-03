@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,10 @@ import movie.android.kizema.moviesampleapp.util.UIHelper;
 public class MovieDetailActivity extends BaseActivity {
 
     private static final String EXTRA = "EXTRA";
+    private static final String SELECTED = "SELECTED";
+    private static final String CAST = "CAST";
+    private static final String CREW = "CREW";
+
 
     private Movie movie;
 
@@ -47,11 +52,21 @@ public class MovieDetailActivity extends BaseActivity {
     @BindView(R.id.tvDescr)
     TextView tvDescr;
 
-    @BindView(R.id.tvCast)
-    TextView tvCast;
+    @BindView(R.id.cast)
+    RadioButton cast;
+
+    @BindView(R.id.crew)
+    RadioButton crew;
+
+    @BindView(R.id.tvInfo)
+    TextView tvInfo;
 
     @BindView(R.id.ivPoster)
     ImageView ivPoster;
+
+    private boolean isCastOpened = true;
+
+    private String castString="", crewString="";
 
     public static Intent createIntent(Activity activity, Movie movie){
         Intent intent = new Intent(activity, MovieDetailActivity.class);
@@ -67,6 +82,12 @@ public class MovieDetailActivity extends BaseActivity {
 
         movie = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA));
         ivPoster.setLayoutParams(new LinearLayout.LayoutParams(UIHelper.getW()/3, UIHelper.getW()/2));
+
+        if (savedInstanceState != null) {
+            isCastOpened = savedInstanceState.getBoolean(SELECTED);
+            castString = savedInstanceState.getString(CAST);
+            crewString = savedInstanceState.getString(CREW);
+        }
 
         setupUI();
     }
@@ -86,6 +107,44 @@ public class MovieDetailActivity extends BaseActivity {
                 .crossFade()
                 .into(ivPoster);
 
+        cast.setSelected(isCastOpened);
+        crew.setSelected(!isCastOpened);
+
+        if (isCastOpened && castString.length() > 1){
+            tvInfo.setText(castString);
+        }
+
+        if (!isCastOpened && crewString.length() > 1){
+            tvInfo.setText(crewString);
+        }
+
+        cast.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isCastOpened) {
+                    return;
+                }
+
+                isCastOpened = true;
+                cast.setSelected(true);
+                crew.setSelected(false);
+                tvInfo.setText(castString);
+            }
+        });
+
+        crew.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isCastOpened) {
+                    return;
+                }
+
+                isCastOpened = false;
+                cast.setSelected(false);
+                crew.setSelected(true);
+                tvInfo.setText(crewString);
+            }
+        });
     }
 
     @Override
@@ -108,20 +167,40 @@ public class MovieDetailActivity extends BaseActivity {
     public void onEvent(MoviePosterEvent event) {
         if (!event.isSuccess){
             Toast.makeText(this, event.errorMsg, Toast.LENGTH_SHORT).show();
-            tvCast.setVisibility(View.GONE);
             return;
         }
 
-        if (event.cast != null && event.cast.size() > 0){
-            StringBuilder builder = new StringBuilder("Csst : \n");
-            for (MovieCreditResponse.CastMan man : event.cast){
+        if (event.cast != null && event.cast.size() > 0) {
+            StringBuilder builder = new StringBuilder("Cast : \n");
+            for (MovieCreditResponse.CastMan man : event.cast) {
                 builder.append(man.name).append(" as ").append(man.character).append("\n");
             }
 
-            tvCast.setText(builder.toString());
-        } else {
-            tvCast.setVisibility(View.GONE);
+            castString = builder.toString();
+            if (isCastOpened) {
+                tvInfo.setText(castString);
+            }
         }
+
+        if (event.crew != null && event.crew.size() > 0){
+            StringBuilder builder = new StringBuilder("Crew : \n");
+            for (MovieCreditResponse.Crew man : event.crew){
+                builder.append(man.job).append(" / ").append(man.name).append("\n");
+            }
+
+            crewString = builder.toString();
+            if (!isCastOpened) {
+                tvInfo.setText(crewString);
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(CAST, castString);
+        outState.putString(CREW, crewString);
+        outState.putBoolean(SELECTED, isCastOpened);
+        super.onSaveInstanceState(outState);
     }
 
     @Override

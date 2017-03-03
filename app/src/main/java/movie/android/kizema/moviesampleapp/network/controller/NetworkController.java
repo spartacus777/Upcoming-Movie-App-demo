@@ -38,7 +38,7 @@ public class NetworkController implements BaseController{
                     event.page = resp.page;
                     event.total_pages = resp.total_pages;
 
-                    EventBus.getDefault().postSticky(event);
+                    EventBus.getDefault().post(event);
                 } else {
                     onFailure(call, new Throwable("Wrong credentials"));
                 }
@@ -52,7 +52,7 @@ public class NetworkController implements BaseController{
                 event.isSuccess = false;
                 event.errorMsg = t.toString();
 
-                EventBus.getDefault().postSticky(event);
+                EventBus.getDefault().post(event);
             }
         });
     }
@@ -71,6 +71,7 @@ public class NetworkController implements BaseController{
                     MoviePosterEvent event = new MoviePosterEvent();
                     event.isSuccess = true;
                     event.cast = resp.cast;
+                    event.crew = resp.crew;
 
                     EventBus.getDefault().post(event);
                 } else {

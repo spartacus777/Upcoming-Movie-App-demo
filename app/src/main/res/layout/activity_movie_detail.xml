@@ -123,8 +123,40 @@
 
         </LinearLayout>
 
+        <RadioGroup
+            android:id="@+id/layout_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="15dp"
+            android:paddingTop="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/cast"
+                android:padding="5dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:layout_weight="1"
+                android:background="@drawable/ranking_btns_back_left"
+                android:text="Cast" />
+
+            <RadioButton
+                android:id="@+id/crew"
+                android:padding="5dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:button="@null"
+                android:background="@drawable/ranking_btns_back_right"
+                android:text="Crew" />
+
+        </RadioGroup>
+
         <TextView
-            android:id="@+id/tvCast"
+            android:id="@+id/tvInfo"
             style="@style/TextSmallerMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

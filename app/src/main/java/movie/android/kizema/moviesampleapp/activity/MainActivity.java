@@ -59,7 +59,7 @@ public class MainActivity extends BaseActivity implements MovieAdapter.OnAdapter
         super.onSaveInstanceState(outState);
     }
 
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(LatestMovieEvent event) {
         mainActivityListHelper.handleLatestMovieEvent(event);
 
