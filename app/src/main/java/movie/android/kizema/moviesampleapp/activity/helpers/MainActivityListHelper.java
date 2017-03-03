@@ -53,15 +53,19 @@ public class MainActivityListHelper {
         init();
     }
 
-    public void handleOnResume(boolean shouldGoToServer, Bundle savedInstanceState){
-        if (shouldGoToServer) {
-            loadMovies();
-        } else if (savedInstanceState != null){
+    public void hadleConfigChanges(Bundle savedInstanceState){
+        if (savedInstanceState != null){
             List<Movie> listMovies = Parcels.unwrap(savedInstanceState.getParcelable(KEY_LIST));
             hasMore = savedInstanceState.getBoolean(KEY_HAS_MORE);
             nextPageId = savedInstanceState.getInt(KEY_NEXT_PAGE_ID);
             totalPages = savedInstanceState.getInt(KEY_TOTAL_PAGES);
             movieAdapter.setList(listMovies);
+        }
+    }
+
+    public void handleOnResume(boolean shouldGoToServer){
+        if (shouldGoToServer) {
+            loadMovies();
         }
     }
 

@@ -23,16 +23,14 @@ public class MainActivity extends BaseActivity implements MovieAdapter.OnAdapter
 
     private MainActivityListHelper mainActivityListHelper;
 
-    private Bundle savedInstanceState;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.savedInstanceState = savedInstanceState;
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
         setupUI();
+        mainActivityListHelper.hadleConfigChanges(savedInstanceState);
     }
 
     private void setupUI(){
@@ -44,7 +42,7 @@ public class MainActivity extends BaseActivity implements MovieAdapter.OnAdapter
         super.onResume();
         EventBus.getDefault().register(this);
 
-        mainActivityListHelper.handleOnResume(getShouldGoToServer(), savedInstanceState);
+        mainActivityListHelper.handleOnResume(getShouldGoToServer());
     }
 
     @Override
