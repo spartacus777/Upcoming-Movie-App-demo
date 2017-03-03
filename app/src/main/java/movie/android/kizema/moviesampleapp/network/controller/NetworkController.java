@@ -7,7 +7,9 @@ import org.greenrobot.eventbus.EventBus;
 import movie.android.kizema.moviesampleapp.App;
 import movie.android.kizema.moviesampleapp.R;
 import movie.android.kizema.moviesampleapp.events.LatestMovieEvent;
+import movie.android.kizema.moviesampleapp.events.MoviePosterEvent;
 import movie.android.kizema.moviesampleapp.model.LatestMoviesResponse;
+import movie.android.kizema.moviesampleapp.model.MovieCreditResponse;
 import movie.android.kizema.moviesampleapp.network.GithubHelper;
 import movie.android.kizema.moviesampleapp.util.Logger;
 import retrofit2.Call;
@@ -51,6 +53,40 @@ public class NetworkController implements BaseController{
                 event.errorMsg = t.toString();
 
                 EventBus.getDefault().postSticky(event);
+            }
+        });
+    }
+
+    @Override
+    public void getMovieImages(int movieId) {
+        Call<MovieCreditResponse> call = GithubHelper.getInstance().getService().getImageByMovieId(movieId, App.getAppContext().getString(R.string.api_key));
+
+        call.enqueue(new Callback<MovieCreditResponse>() {
+            @Override
+            public void onResponse(Call<MovieCreditResponse> call, Response<MovieCreditResponse> response) {
+                if (response.isSuccessful() && response.code() == SUCCESS_CODE) {
+                    Log.d(Logger.TAG, "Response: " + response.toString());
+                    MovieCreditResponse resp = response.body();
+
+                    MoviePosterEvent event = new MoviePosterEvent();
+                    event.isSuccess = true;
+                    event.cast = resp.cast;
+
+                    EventBus.getDefault().post(event);
+                } else {
+                    onFailure(call, new Throwable("Wrong credentials"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MovieCreditResponse> call, Throwable t) {
+                Log.d(Logger.TAG, "Response: " + t.toString());
+
+                MoviePosterEvent event = new MoviePosterEvent();
+                event.isSuccess = false;
+                event.errorMsg = t.toString();
+
+                EventBus.getDefault().post(event);
             }
         });
     }
