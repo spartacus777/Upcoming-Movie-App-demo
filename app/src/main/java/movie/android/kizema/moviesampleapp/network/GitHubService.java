@@ -1,7 +1,7 @@
 package movie.android.kizema.moviesampleapp.network;
 
 import movie.android.kizema.moviesampleapp.model.LatestMoviesResponse;
-import movie.android.kizema.moviesampleapp.model.VideoResponse;
+import movie.android.kizema.moviesampleapp.model.Movie;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -13,6 +13,6 @@ public interface GitHubService {
     Call<LatestMoviesResponse> listMovies(@Query("api_key") String api_key, @Query("page") int page);
 
     @GET("movie/{id}/videos")
-    Call<VideoResponse> getVideoByMovieId(@Path("id") Integer idMovie, @Query("api_key") String api_key, @Query("language") String language);
+    Call<Movie> getVideoByMovieId(@Path("id") Integer idMovie, @Query("api_key") String api_key, @Query("language") String language);
 
 }

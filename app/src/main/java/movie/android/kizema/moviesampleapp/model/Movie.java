@@ -2,9 +2,9 @@ package movie.android.kizema.moviesampleapp.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class VideoResponse {
+public class Movie {
 
-    @SerializedName("id")
+    @SerializedName("poster_path")
     public String poster_path;
 
     @SerializedName("overview")
@@ -12,6 +12,9 @@ public class VideoResponse {
 
     @SerializedName("title")
     public String title;
+
+    @SerializedName("id")
+    public int id;
 
     public String toString(){
         return "Movie " + title + "  Overview " + overview;
