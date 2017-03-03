@@ -17,6 +17,7 @@ import retrofit2.Response;
 public class NetworkController implements BaseController{
 
     private static final int SUCCESS_CODE = 200;
+    public static final String IMAGE_DOMAIN = "https://image.tmdb.org/t/p/w500";
 
     @Override
     public void getLatestMovies(int page) {

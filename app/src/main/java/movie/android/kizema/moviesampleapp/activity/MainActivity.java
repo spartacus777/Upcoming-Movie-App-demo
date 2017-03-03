@@ -1,5 +1,6 @@
 package movie.android.kizema.moviesampleapp.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -10,10 +11,12 @@ import org.greenrobot.eventbus.ThreadMode;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import movie.android.kizema.moviesampleapp.R;
-import movie.android.kizema.moviesampleapp.adapter.MainActivityListHelper;
+import movie.android.kizema.moviesampleapp.activity.helpers.MainActivityListHelper;
+import movie.android.kizema.moviesampleapp.adapter.MovieAdapter;
 import movie.android.kizema.moviesampleapp.events.LatestMovieEvent;
+import movie.android.kizema.moviesampleapp.model.Movie;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements MovieAdapter.OnAdapterClickListener {
 
     @BindView(R.id.activity_main)
     View activity_main;
@@ -33,7 +36,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setupUI(){
-        mainActivityListHelper = new MainActivityListHelper(activity_main);
+        mainActivityListHelper = new MainActivityListHelper(activity_main, this);
     }
 
     @Override
@@ -64,5 +67,12 @@ public class MainActivity extends BaseActivity {
         if(stickyEvent != null) {
             EventBus.getDefault().removeStickyEvent(stickyEvent);
         }
+    }
+
+    @Override
+    public void onItemCLick(Movie movie) {
+        Intent intent = MovieDetailActivity.createIntent(this, movie);
+        startActivity(intent);
+        overridePendingTransition(R.anim.activity_transition_in, R.anim.noanim);
     }
 }

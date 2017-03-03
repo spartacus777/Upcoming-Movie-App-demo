@@ -5,6 +5,7 @@ import android.content.Context;
 
 import movie.android.kizema.moviesampleapp.network.controller.BaseController;
 import movie.android.kizema.moviesampleapp.network.controller.NetworkController;
+import movie.android.kizema.moviesampleapp.util.UIHelper;
 
 public class App extends Application {
 
@@ -15,6 +16,7 @@ public class App extends Application {
         super.onCreate();
 
         appContext = getApplicationContext();
+        UIHelper.init(appContext);
     }
 
     public static Context getAppContext(){

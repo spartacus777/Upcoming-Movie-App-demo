@@ -4,7 +4,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -12,6 +16,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import movie.android.kizema.moviesampleapp.R;
 import movie.android.kizema.moviesampleapp.model.Movie;
+import movie.android.kizema.moviesampleapp.network.controller.NetworkController;
+import movie.android.kizema.moviesampleapp.util.UIHelper;
 
 public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -20,8 +26,15 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private List<Movie> movies;
     private boolean showFooter = true;
+    private OnAdapterClickListener listener;
 
-    public MovieAdapter() {}
+    public interface OnAdapterClickListener{
+        void onItemCLick(Movie movie);
+    }
+
+    public MovieAdapter(OnAdapterClickListener listener) {
+        this.listener = listener;
+    }
 
     public void update(List<Movie> newMovies){
         if (this.movies == null) {
@@ -41,18 +54,30 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public static class RepoViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.tvName)
+        @BindView(R.id.tvTitle)
         TextView tvName;
 
-        @BindView(R.id.tvStars)
-        TextView tvStars;
+        @BindView(R.id.tvUserVotes)
+        TextView tvUserVotes;
 
         @BindView(R.id.tvDate)
         TextView tvDate;
 
+        @BindView(R.id.tvRating)
+        TextView tvRating;
+
+        @BindView(R.id.tvDescr)
+        TextView tvDescr;
+
+        @BindView(R.id.ivPoster)
+        ImageView ivPoster;
+
+
         public RepoViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            ivPoster.setLayoutParams(new LinearLayout.LayoutParams(UIHelper.getW()/3, UIHelper.getW()/2));
         }
     }
 
@@ -86,10 +111,33 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         switch (getItemViewType(position)){
             case ITEM:
-                Movie model = movies.get(position);
+                final Movie model = movies.get(position);
                 RepoViewHolder repoHolder = (RepoViewHolder) holder;
                 repoHolder.tvName.setText(model.title);
-                repoHolder.tvDate.setText(model.overview);
+                repoHolder.tvDate.setText(model.release_date);
+                repoHolder.tvUserVotes.setText("" + model.vote_count);
+                repoHolder.tvDescr.setText(model.overview);
+                repoHolder.tvRating.setText(""+UIHelper.round(model.popularity));
+
+                Glide.with(holder.itemView.getContext())
+                        .load(NetworkController.IMAGE_DOMAIN + model.poster_path)
+                        .centerCrop()
+                        .placeholder(R.drawable.ic_placeholder)
+                        .error(R.drawable.ic_placeholder)
+                        .crossFade()
+                        .into(repoHolder.ivPoster);
+
+                repoHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (holder.getAdapterPosition() < 0){
+                            return;
+                        }
+                        Movie m = movies.get(holder.getAdapterPosition());
+                        listener.onItemCLick(m);
+                    }
+                });
+
                 break;
         }
     }

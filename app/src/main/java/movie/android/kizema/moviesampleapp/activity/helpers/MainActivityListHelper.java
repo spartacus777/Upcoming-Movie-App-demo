@@ -1,4 +1,4 @@
-package movie.android.kizema.moviesampleapp.adapter;
+package movie.android.kizema.moviesampleapp.activity.helpers;
 
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +15,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import movie.android.kizema.moviesampleapp.App;
 import movie.android.kizema.moviesampleapp.R;
+import movie.android.kizema.moviesampleapp.adapter.MovieAdapter;
 import movie.android.kizema.moviesampleapp.events.LatestMovieEvent;
 import movie.android.kizema.moviesampleapp.model.Movie;
 import movie.android.kizema.moviesampleapp.util.AppRecyclerView;
@@ -35,6 +36,8 @@ public class MainActivityListHelper {
     @BindView(R.id.pbEmpty)
     ProgressBar pbEmpty;
 
+    private MovieAdapter.OnAdapterClickListener listener;
+
     private MovieAdapter movieAdapter;
 
     private boolean mMoreCallOnGoing = false;
@@ -43,8 +46,10 @@ public class MainActivityListHelper {
     private int nextPageId = INITIAL_PAGE_ID;
     private int totalPages;
 
-    public MainActivityListHelper(View main){
+    public MainActivityListHelper(View main, MovieAdapter.OnAdapterClickListener listener){
         ButterKnife.bind(this, main);
+        this.listener = listener;
+
         init();
     }
 
@@ -77,7 +82,7 @@ public class MainActivityListHelper {
     }
 
     private void init(){
-        movieAdapter = new MovieAdapter();
+        movieAdapter = new MovieAdapter(listener);
         rvRepos.setAdapter(movieAdapter);
         LinearLayoutManager mChatLayoutManager = new LinearLayoutManager(rvRepos.getContext(), LinearLayoutManager.VERTICAL, false);
         rvRepos.setLayoutManager(mChatLayoutManager);
