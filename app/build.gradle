@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
-
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.0"
@@ -40,4 +39,7 @@ dependencies {
 
     compile 'org.greenrobot:greendao:3.2.0'
     compile 'net.zetetic:android-database-sqlcipher:3.5.4'
+
+    compile 'org.parceler:parceler-api:1.1.6'
+    annotationProcessor 'org.parceler:parceler:1.1.6'
 }

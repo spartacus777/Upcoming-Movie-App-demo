@@ -2,6 +2,9 @@ package movie.android.kizema.moviesampleapp.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.parceler.Parcel;
+
+@Parcel
 public class Movie {
 
     @SerializedName("poster_path")

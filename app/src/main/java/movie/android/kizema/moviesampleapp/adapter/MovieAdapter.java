@@ -115,6 +115,10 @@ public class MovieAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         notifyDataSetChanged();
     }
 
+    public List<Movie> getItems(){
+        return movies;
+    }
+
     public void showFooter(){
 
         if (!showFooter) {

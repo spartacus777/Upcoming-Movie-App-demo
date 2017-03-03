@@ -1,21 +1,31 @@
 package movie.android.kizema.moviesampleapp.adapter;
 
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import org.parceler.Parcels;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import movie.android.kizema.moviesampleapp.App;
 import movie.android.kizema.moviesampleapp.R;
 import movie.android.kizema.moviesampleapp.events.LatestMovieEvent;
+import movie.android.kizema.moviesampleapp.model.Movie;
 import movie.android.kizema.moviesampleapp.util.AppRecyclerView;
 import movie.android.kizema.moviesampleapp.util.Logger;
 
-public class AdapterHelper {
+public class MainActivityListHelper {
+
+    private static final String KEY_LIST = "KEY_LIST";
+    private static final String KEY_HAS_MORE = "KEY_HAS_MORE";
+    private static final String KEY_NEXT_PAGE_ID = "KEY_NEXT_PAGE_ID";
+    private static final String KEY_TOTAL_PAGES = "KEY_TOTAL_PAGES";
 
     private static final int INITIAL_PAGE_ID = 1;
 
@@ -28,30 +38,26 @@ public class AdapterHelper {
     private MovieAdapter movieAdapter;
 
     private boolean mMoreCallOnGoing = false;
-    private boolean mUserScrolled = false;
-
     private boolean hasMore = false;
+
     private int nextPageId = INITIAL_PAGE_ID;
     private int totalPages;
 
-    public AdapterHelper(View main){
+    public MainActivityListHelper(View main){
         ButterKnife.bind(this, main);
-
         init();
     }
 
-    public void handleOnResume(boolean shouldGoToServer){
+    public void handleOnResume(boolean shouldGoToServer, Bundle savedInstanceState){
         if (shouldGoToServer) {
             loadMovies();
+        } else if (savedInstanceState != null){
+            List<Movie> listMovies = Parcels.unwrap(savedInstanceState.getParcelable(KEY_LIST));
+            hasMore = savedInstanceState.getBoolean(KEY_HAS_MORE);
+            nextPageId = savedInstanceState.getInt(KEY_NEXT_PAGE_ID);
+            totalPages = savedInstanceState.getInt(KEY_TOTAL_PAGES);
+            movieAdapter.update(listMovies);
         }
-    }
-
-    private void loadMovies(){
-        mMoreCallOnGoing = true;
-        movieAdapter.showFooter();
-
-        Logger.d("Loading page " + nextPageId + "/" + totalPages);
-        App.getController().getLatestMovies(nextPageId);
     }
 
     public void handleLatestMovieEvent(LatestMovieEvent event){
@@ -81,11 +87,7 @@ public class AdapterHelper {
         RecyclerView.OnScrollListener mScrollListner = new RecyclerView.OnScrollListener() {
 
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                    mUserScrolled = true;
-                }
-            }
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {}
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -96,40 +98,34 @@ public class AdapterHelper {
                 int lastVisible = mg.findLastVisibleItemPosition();
 
                 if (lastVisible < 0) {
-                    //no item in the list view at all, do nothing since load more only happen after list
-                    //have sth
                     return;
                 }
 
                 boolean loadMore = (lastVisible == (totalCount - 1));
 
-                //Logging.log("monkey", String.format("%d, %d", lastVisible, totalCount));
                 if (loadMore) {
-                    //only queryMore when
-                    // 1) list view is scrolled
-                    // 2) queryMore call is not ongoing
-                    // 3) hasMore() returns true
-                    //Logging.log("monkey", mMoreCallOnGoing + ", onScroll mUserScrolled=" + mUserScrolled + ", hasMore()=" + mPaginateCallInstance.hasMore());
-                    if (!mMoreCallOnGoing  && hasMore) {//&& mUserScrolled
-                        // add protection to avoid multiple call
-                        mUserScrolled = false;
-
+                    if (!mMoreCallOnGoing  && hasMore) {
                         loadMovies();
-                    } else {
-//                        PhotosListAdapter adapter = (PhotosListAdapter) mList.getAdapter();
-//                        if (!mPaginateCallInstance.hasMore()) {
-//                            //hide footer
-//                            adapter.setFooterStatus(false);
-//                        } else {
-//                            adapter.setFooterStatus(true);
-//                        }
                     }
                 }
-
             }
         };
 
         rvRepos.addOnScrollListener(mScrollListner);
     }
 
+    private void loadMovies(){
+        mMoreCallOnGoing = true;
+        movieAdapter.showFooter();
+
+        Logger.d("Loading page " + nextPageId + "/" + totalPages);
+        App.getController().getLatestMovies(nextPageId);
+    }
+
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(KEY_LIST, Parcels.wrap( movieAdapter.getItems()));
+        outState.putBoolean(KEY_HAS_MORE, hasMore);
+        outState.putInt(KEY_NEXT_PAGE_ID, nextPageId);
+        outState.putInt(KEY_TOTAL_PAGES, totalPages);
+    }
 }
